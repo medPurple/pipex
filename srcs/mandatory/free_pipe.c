@@ -1,15 +1,42 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   path.c                                             :+:      :+:    :+:   */
+/*   free_pipe.c                         	            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: wmessmer <wmessmer@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/02/01 16:06:46 by wmessmer          #+#    #+#             */
-/*   Updated: 2023/02/01 19:46:34 by wmessmer         ###   ########.fr       */
+/*   Created: 2023/02/03 15:59:43 by wmessmer          #+#    #+#             */
+/*   Updated: 2023/02/03 16:17:07 by wmessmer         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/pipex.h"
 
-"https://github.com/tolmvad/pipex/blob/master/includes/pipex.h"
+void	free_child(t_pipe *pipex)
+{
+	int	i;
+
+	i = 0;
+	while (pipex->cmd_arg[i])
+	{
+		free(pipex->cmd_arg[i]);
+		i++;
+	}
+	free(pipex->cmd_arg);
+	free(pipex->cmd);
+}
+
+void	free_parent(t_pipe *pipex)
+{
+	int	i;
+
+	i = 0;
+	close(pipex->fd_infile);
+	close(pipex->fd_outfile);
+	while (pipex->cmd_path[i])
+	{
+		free(pipex->cmd_path[i]);
+		i++;
+	}
+	free(pipex->cmd_path);
+}
