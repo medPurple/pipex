@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../../includes/pipex.h"
+#include "../../include/pipex.h"
 
 void	free_child(t_pipe *pipex)
 {

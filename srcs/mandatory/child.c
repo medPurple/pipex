@@ -10,21 +10,21 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../../includes/pipex.h"
+#include "../../include/pipex.h"
 
-void child(t_pipe *pipex, char **av, char **env)
+void child(t_pipe pipex, char **av, char **env)
 {
-	dup2(pipex->pipe_fd[1],STDOUT_FILENO);
-	close(pipex->pipe_fd[0]);
-	dup2(pipex->fd_infile,STDIN_FILENO);
-	pipex->cmd_arg = ft_split(av[2], ' ');
-	pipex->cmd = get_cmd(pipex);
-	if (!pipex->cmd)
+	dup2(pipex.pipe_fd[1], 1);
+	close(pipex.pipe_fd[0]);
+	dup2(pipex.fd_infile, 0);
+	pipex.cmd_arg = ft_split(av[2], ' ');
+	pipex.cmd = get_cmd(pipex.cmd_path, pipex.cmd_arg[0]);
+	if (!pipex.cmd)
 	{
-		free_child(pipex);
+		free_child(&pipex);
 		exit(1);
 	}
-	execve(pipex->cmd,pipex->cmd_arg,env);
+	execve(pipex.cmd, pipex.cmd_arg, env);
 }
 
 void parent(t_pipe *pipex, char **av, char **env)
@@ -33,11 +33,11 @@ void parent(t_pipe *pipex, char **av, char **env)
 	close(pipex->pipe_fd[1]);
 	dup2(pipex->fd_outfile,STDOUT_FILENO);
 	pipex->cmd_arg = ft_split(av[3], ' ');
-	pipex->cmd = get_cmd(pipex);
+	pipex->cmd = get_cmd(pipex->cmd_path,pipex->cmd_arg[0]);
 	if (!pipex->cmd)
 	{
 		free_child(pipex);
 		exit(1);
 	}
-	execve(pipex->cmd,pipex->cmd_arg,env);	
+	execve(pipex->cmd,pipex->cmd_arg,env);
 }
