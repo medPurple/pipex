@@ -12,32 +12,40 @@
 
 #include "../../include/pipex.h"
 
-void child(t_pipe pipex, char **av, char **env)
+void	child(t_pipe *pipex, char **av, char **env)
 {
-	dup2(pipex.pipe_fd[1], 1);
-	close(pipex.pipe_fd[0]);
-	dup2(pipex.fd_infile, 0);
-	pipex.cmd_arg = ft_split(av[2], ' ');
-	pipex.cmd = get_cmd(pipex.cmd_path, pipex.cmd_arg[0]);
-	if (!pipex.cmd)
-	{
-		free_child(&pipex);
-		exit(1);
-	}
-	execve(pipex.cmd, pipex.cmd_arg, env);
-}
-
-void parent(t_pipe *pipex, char **av, char **env)
-{
-	dup2(pipex->pipe_fd[0],STDIN_FILENO);
-	close(pipex->pipe_fd[1]);
-	dup2(pipex->fd_outfile,STDOUT_FILENO);
-	pipex->cmd_arg = ft_split(av[3], ' ');
-	pipex->cmd = get_cmd(pipex->cmd_path,pipex->cmd_arg[0]);
-	if (!pipex->cmd)
+	dup2(pipex->pipe_fd[1], 1);
+	close(pipex->pipe_fd[0]);
+	dup2(pipex->fd_infile, 0);
+	pipex->cmd_arg = ft_split(av[2], ' ');
+	if (av[2][0] == '/')
+		pipex->cmd =  pipex->cmd_arg[0];
+	else
+		pipex->cmd = get_cmd(pipex->cmd_path, pipex->cmd_arg[0]);
+	if(execve(pipex->cmd, pipex->cmd_arg, env) == -1)
 	{
 		free_child(pipex);
+		free_parent(pipex);
+		send_error("can't execute cmd one\n");
 		exit(1);
 	}
-	execve(pipex->cmd,pipex->cmd_arg,env);
+}
+
+void	parent(t_pipe *pipex, char **av, char **env)
+{
+	dup2(pipex->pipe_fd[0], STDIN_FILENO);
+	close(pipex->pipe_fd[1]);
+	dup2(pipex->fd_outfile, STDOUT_FILENO);
+	pipex->cmd_arg = ft_split(av[3], ' ');
+	if (av[3][0] == '/')
+		pipex->cmd =  pipex->cmd_arg[0];
+	else
+		pipex->cmd = get_cmd(pipex->cmd_path, pipex->cmd_arg[0]);
+	if(execve(pipex->cmd, pipex->cmd_arg, env) == -1)
+	{
+		free_child(pipex);
+		free_parent(pipex);
+		send_error("can't execute cmd two\n");
+		exit(1);
+	}
 }

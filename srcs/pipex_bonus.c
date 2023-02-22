@@ -1,44 +1,22 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   free_pipe.c                         	            :+:      :+:    :+:   */
+/*   pipex_bonus.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: wmessmer <wmessmer@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/02/03 15:59:43 by wmessmer          #+#    #+#             */
-/*   Updated: 2023/02/03 16:17:07 by wmessmer         ###   ########.fr       */
+/*   Created: 2023/02/09 17:53:08 by wmessmer          #+#    #+#             */
+/*   Updated: 2023/02/20 10:09:28 by wmessmer         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../../include/pipex.h"
+#include "../include/pipex.h"
 
-void	free_child(t_pipe *pipex)
+int	main(int ac, char **av, char **env)
 {
-	int	i;
-
-	i = 0;
-	while (pipex->cmd_arg[i])
-	{
-		free(pipex->cmd_arg[i]);
-		i++;
-	}
-	free(pipex->cmd_arg);
-}
-
-void	free_parent(t_pipe *pipex)
-{
-	int	i;
-
-	i = 0;
-	close(pipex->fd_infile);
-	close(pipex->fd_outfile);
-	if (pipex->path)
-	{	
-		while (pipex->cmd_path[i])
-		{
-			free(pipex->cmd_path[i]);
-			i++;
-		}
-		free(pipex->cmd_path);
-	}
+	t_pipe_b pipex;
+	
+	if (ac < here_or_not((av[1]),&pipex))
+		return (send_error("Wrong arg"), 0);
+	bonus_init(av,ac,&pipex);	
 }
